@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <style>
+        body { font-family: Arial; }
+        nav {
+            background-color: #333;
+            padding: 10px;
+            text-align: center;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            display: inline-block;
+        }
+        nav a:hover {
+            background-color: #555;
+        }
+        form {
+            margin: auto;
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="register.html">Register</a>
+    <a href="login.html">Login</a>
+</nav>
+
+<h2>Login</h2>
+<form id="loginForm" action="login.php" method="POST">
+    <label>Username:</label><br>
+    <input type="text" name="username" required><br>
+    <label>Password:</label><br>
+    <input type="password" name="password" required><br><br>
+    <button type="submit" id="loginBtn">Login</button>
+</form>
+
+<script>
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+    
+        const form = this;
+        const formData = new FormData(form);
+        const loginBtn = document.getElementById("loginBtn");
+    
+        fetch("login.php", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.text())
+        .then(result => {
+            if (result === "success") {
+                alert("Login successful!");
+                window.location.href = "dashboard.php";
+            } else if (result === "invalid") {
+                alert("Invalid username or password.");
+            } else if (result === "locked") {
+                alert("Too many failed attempts. Please try again in 5 minutes.");
+                disableLoginButton(loginBtn);
+            }
+        });
+    });
+    
+    function disableLoginButton(button) {
+        button.disabled = true;
+        button.textContent = "Locked (5 min)";
+        button.style.backgroundColor = "#999";
+        button.style.cursor = "not-allowed";
+    
+        setTimeout(() => {
+            button.disabled = false;
+            button.textContent = "Login";
+            button.style.backgroundColor = "";
+            button.style.cursor = "";
+        }, 5 * 60 * 1000); // 5 minutes
+    }
+    </script>
+    
+    
+</body>
+</html>
